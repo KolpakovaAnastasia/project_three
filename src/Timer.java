@@ -20,7 +20,8 @@ class Timer extends Thread {
                 else if (min != 59) {
                     min++;
                     sec = 0;
-                } else {
+                }
+                else {
                     hr++;
                     min = 0;
                     sec = 0;
@@ -28,7 +29,8 @@ class Timer extends Thread {
                 sleep(1000);
                 update();
             }
-        } catch(InterruptedException e) {}
+        } catch (InterruptedException ignored) {
+        }
     }
 
     // обновление дисплея таймера
@@ -37,18 +39,21 @@ class Timer extends Thread {
     }
 
     // формироваиние строки таймера формата "hh:mm:ss"
-    public String getTimeString() {
+    private String getTimeString() {
         StringBuilder timestr = new StringBuilder("");
-        if(hr < 10) timestr.append("0");
+        if (hr < 10)
+            timestr.append("0");
         timestr.append(hr + ":");
-        if(min < 10) timestr.append("0");
+        if (min < 10)
+            timestr.append("0");
         timestr.append(min + ":");
-        if(sec < 10) timestr.append("0");
+        if (sec < 10)
+            timestr.append("0");
         timestr.append(sec);
         return timestr.toString();
     }
 
-    public Text getDisplay() {
+    Text getDisplay() {
         return display;
     }
 }

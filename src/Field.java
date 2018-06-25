@@ -3,42 +3,43 @@ import java.util.List;
 
 //класс описывающий все клетки поля
 
-public class Field {
-    public Cell[][] cells;
+class Field {
+    Cell[][] cells;
     int size;
     boolean failed;
 //создает поле
 
-    Field(int _size, int bombs) {
+    Field(int size, int bombs) {
         failed = false;
-        size = _size;
+        this.size = size;
         cells = new Cell[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                int value = ((int)  Math.ceil(Math.random() * 100)) % 3;
+                int value = ((int) Math.ceil(Math.random() * 100)) % 3;
                 if (value == 1 && bombs > 0) {
                     cells[i][j] = new Cell(i, j, true);
                     bombs--;
-                } else
+                }
+                else
                     cells[i][j] = new Cell(i, j, false);
-                cells[i][j].state = CellState.closed;
+                cells[i][j].setState(CellState.closed);
             }
         }
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++) {
-                cells[i][j].bombsNear = GetBombsCount(cells[i][j]);
+                cells[i][j].setBombsNear(getBombsCount(cells[i][j]));
             }
     }
+
     //проверка координат клетки
-    boolean IsCorrect(int value) {
-        if (value > -1 && value < size)
-            return true;
-        return false;
+    private boolean isCorrect(int value) {
+        return value > -1 && value < size;
     }
+
     //получение соседних клеток, для открытия свободных областей
-    List<Cell> GetNeighbors(Cell cell) {
+    private List<Cell> getNeighbors(Cell cell) {
         List<Cell> neighbors = new ArrayList<>();
-        int[] points = (cell.y % 2 != 0) ? new int[]{
+        int[] points = (cell.getY() % 2 != 0) ? new int[]{
                 0, -1,
                 1, -1,
                 -1, 0,
@@ -55,38 +56,39 @@ public class Field {
         };
         for (int i = 0; i < points.length; i++) {
             int dx = points[i], dy = points[++i];
-            int newX = cell.x + dx, newY = cell.y + dy;
+            int newX = cell.getX() + dx, newY = cell.getY() + dy;
 
-            if (IsCorrect(newX) && IsCorrect(newY))
+            if (isCorrect(newX) && isCorrect(newY))
                 neighbors.add(cells[(int) newX][(int) newY]);
         }
         return neighbors;
     }
 
     //подсчет соседних бомб для конкретной клетки
-    int GetBombsCount(Cell cell) {
+    private int getBombsCount(Cell cell) {
         int counter = 0;
-        List<Cell> neighbours = GetNeighbors(cell);
-        for (int i = 0; i < neighbours.size(); i++)
-            if (neighbours.get(i).isBomb)
+        List<Cell> neighbours = getNeighbors(cell);
+        for (Cell neighbour : neighbours)
+            if (neighbour.isBomb())
                 counter++;
         return counter;
     }
 
 //обновление поля после нажатия по клетке
 
-    public void Select(Cell cell) {
-        if (cell.state == CellState.closed) {
-            cell.state = CellState.opened;
-            if (cell.isBomb)
+    void select(Cell cell) {
+        if (cell.getState() == CellState.closed) {
+            cell.setState(CellState.opened);
+            if (cell.isBomb())
                 failed = true;
-            cells[cell.x][cell.y] = cell;
-            List<Cell> list = GetNeighbors(cell);
-            for (int i = 0; i < list.size(); i++) {
-                if (list.get(i).bombsNear == 0) {
-                    Select(list.get(i));
-                } else if (!list.get(i).isBomb) {
-                    cells[list.get(i).x][list.get(i).y].state = CellState.opened;
+            cells[cell.getX()][cell.getY()] = cell;
+            List<Cell> list = getNeighbors(cell);
+            for (Cell aList : list) {
+                if (aList.getBombsNear() == 0) {
+                    select(aList);
+                }
+                else if (!aList.isBomb()) {
+                    cells[aList.getX()][aList.getY()].setState(CellState.opened);
                 }
             }
         }
@@ -94,12 +96,12 @@ public class Field {
 
 //открытие всех клеток в конце игры
 
-    public void Open() {
+    void open() {
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++) {
-                if(cells[i][j].state == CellState.closed ||
-                        cells[i][j].state == CellState.marked && !cells[i][j].isBomb)
-                    cells[i][j].state = CellState.opened;
+                if (cells[i][j].getState() == CellState.closed ||
+                        cells[i][j].getState() == CellState.marked && !cells[i][j].isBomb())
+                    cells[i][j].setState(CellState.opened);
             }
     }
 }

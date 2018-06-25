@@ -5,29 +5,31 @@ import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+
 //приложение
 public class Main extends Application {
     Field field;
-    Pane _root;
-    Stage _stage;
-    Timer timer = new Timer(); // TIMER: игровой таймер (создание)
-    int size = 80;
-    int w = 800 + size / 2, h = 658, count = 10, bombs = 100;
-    //перерисовывает поле
-    public void UpdateField(Field field) {
-        Scene scene = new Scene(DrawField(field, w, h));
-        _stage.setScene(scene);
-        _stage.show();
-        _stage.setTitle("Minesweeper");
-        _stage.getIcons().add(new Image("cell.png"));
-        _stage.setResizable(true);
-    }
-    //рисует поле
-    private Parent DrawField(Field field, int width, int height) {
-        Pane root = new Pane();
+    private Stage stage;
+    private Timer timer = new Timer(); // TIMER: игровой таймер (создание)
+    private int size = 80;
+    private int w = 800 + size / 2;
+    private int h = 658;
 
-        if (field.failed == true) {
-            field.Open();
+    //перерисовывает поле
+    void updateField(Field field) {
+        Scene scene = new Scene(drawField(field, w, h));
+        stage.setScene(scene);
+        stage.show();
+        stage.setTitle("Minesweeper");
+        stage.getIcons().add(new Image("cell.png"));
+        stage.setResizable(true);
+    }
+
+    //рисует поле
+    private Parent drawField(Field field, int width, int height) {
+        Pane root = new Pane();
+        if (field.failed) {
+            field.open();
             timer.interrupt(); // TIMER: остановка таймера
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("BANG!");
@@ -44,26 +46,28 @@ public class Main extends Application {
                 root.getChildren().add(tile);
             }
         }
-        root.setPrefSize(width, height+30); // TIMER: +30px для таймера
+        root.setPrefSize(width, height + 30); // TIMER: +30px для таймера
         return root;
     }
 
     //создание поля
     private Parent CreateField(int width, int height, int size) {
         timer.setDaemon(true); // TIMER: поток таймера будет закрываться вместе с главным потоком
+        int bombs = 100;
         field = new Field(size, bombs);
-        Pane root = (Pane) DrawField(field, width, height);
+        Pane root = (Pane) drawField(field, width, height);
         timer.start(); // TIMER: запуск таймера
 
-        _root = root;
+        root = root;
         root.setPrefSize(width, height + 30); // TIMER: + 30px для таймера
         return root;
     }
 
     //создание окна приложения
     private void CreateStage(Stage stage) {
+        int count = 10;
         Scene scene = new Scene(CreateField(w, h, count));
-        _stage = stage;
+        this.stage = stage;
         stage.setScene(scene);
         stage.show();
         stage.setTitle("Minesweeper");
