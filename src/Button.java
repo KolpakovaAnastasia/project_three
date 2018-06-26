@@ -7,7 +7,7 @@ import javafx.scene.text.Text;
 import static java.lang.Math.sqrt;
 
 //класс описывающий кнопку
-class Button extends StackPane {
+public class Button extends StackPane {
     private Cell cell;
     private Color opened = Color.GRAY;
     private Color closed = Color.BLUE;
