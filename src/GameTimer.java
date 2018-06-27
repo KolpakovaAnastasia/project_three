@@ -7,7 +7,7 @@ class GameTimer extends Thread {
     private Text display;
 
     // создание таймера
-    GameTimer(Text _display) { display = _display; }
+    GameTimer(Text display) { this.display = display; }
 
     // запуск таймера
     public void run() {
@@ -34,7 +34,7 @@ class GameTimer extends Thread {
         Platform.runLater(() -> display.setText(getTimeString()));
     }
 
-    // формироваиние строки таймера формата "hh:mm:ss"
+    // формирование строки таймера формата "hh:mm:ss"
     public String getTimeString() {
         StringBuilder timestr = new StringBuilder("");
         if(hr < 10) timestr.append("0");

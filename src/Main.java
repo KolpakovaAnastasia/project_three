@@ -52,7 +52,7 @@ public class Main extends Application {
     }
 
     //создание поля
-    private Parent CreateField(int width, int height, int size) {
+    private Parent createField(int width, int height, int size) {
         gameTimer.setDaemon(true); // TIMER: поток игровогоТаймера будет закрываться вместе с главным потоком
         field = new Field(size, bombs);
         Pane root = (Pane) drawField(field, width, height);
@@ -62,8 +62,8 @@ public class Main extends Application {
     }
 
     //создание окна приложения
-    private void CreateStage(Stage stage) {
-        Scene scene = new Scene(CreateField(w, h, count));
+    private void createStage(Stage stage) {
+        Scene scene = new Scene(createField(w, h, count));
         this.stage = stage;
         stage.setScene(scene);
         stage.show();
@@ -74,7 +74,7 @@ public class Main extends Application {
 
     //запуск игры
     public void start(Stage stage) throws Exception {
-        CreateStage(stage);
+        createStage(stage);
     }
 
     public static void main(String[] args) {
