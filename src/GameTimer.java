@@ -1,6 +1,13 @@
+import javafx.application.Platform;
+import javafx.scene.text.Text;
+
 // игровой таймер
 class GameTimer extends Thread {
     private int hr = 0, min = 0, sec = 0;
+    private Text display;
+
+    // создание таймера
+    GameTimer(Text _display) { display = _display; }
 
     // запуск таймера
     public void run() {
@@ -17,8 +24,14 @@ class GameTimer extends Thread {
                     sec = 0;
                 }
                 sleep(1000);
+                update();
             }
         } catch(InterruptedException e) {}
+    }
+
+    // обновление дисплея таймера
+    private void update() {
+        Platform.runLater(() -> display.setText(getTimeString()));
     }
 
     // формироваиние строки таймера формата "hh:mm:ss"

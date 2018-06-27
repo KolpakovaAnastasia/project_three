@@ -7,16 +7,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import java.util.Timer;
-import java.util.TimerTask;
 
 //приложение
 public class Main extends Application {
     Field field;
     private Stage stage;
-    private Timer timer = new Timer(); // GAME_TIMER: таймер для обновления дисплея игровогоТаймера
-    private GameTimer gameTimer = new GameTimer(); // GAME_TIMER: игровой таймер (вычисления)
-    private Text timerDisplay = new Text(350, 658 + 25, "00:00:00"); // GAME_TIMER: дисплей таймера
+    private Text timerDisplay = new Text(350, 658 + 25, "00:00:00"); // "дисплей таймера"
+    GameTimer gameTimer = new GameTimer(timerDisplay); // TIMER: игровой таймер (создание)
     private int size = 80,w = 800 + size / 2, h = 658, count = 10, bombs = 100;
 
     //перерисовывает поле
@@ -34,15 +31,14 @@ public class Main extends Application {
         Pane root = new Pane();
         if (field.failed) {
             field.open();
-            timer.cancel(); // GAME_TIMER: остановка таймера обновления дисплея игровогоТаймера
-            gameTimer.interrupt(); // GAME_TIMER: остановка работы игровогоТаймера
+            gameTimer.interrupt(); // TIMER: остановка таймера
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("BANG!");
             alert.setHeaderText(null);
             alert.setContentText("GAME OVER");
             alert.showAndWait();
         }
-        timerDisplay.setFont(new Font(30)); // GAME_TIMER: установка шрифта
+        timerDisplay.setFont(new Font(30)); // TIMER: установка шрифта
         root.getChildren().add(timerDisplay);  // добавление на root Pane
 
         for (int i = 0; i < field.size; i++) {
@@ -51,30 +47,17 @@ public class Main extends Application {
                 root.getChildren().add(tile);
             }
         }
-        root.setPrefSize(width, height + 30); // GAME_TIMER: +30px для таймера
+        root.setPrefSize(width, height + 30); // TIMER: +30px для таймера
         return root;
     }
 
     //создание поля
     private Parent CreateField(int width, int height, int size) {
-        gameTimer.setDaemon(true); // GAME_TIMER: поток игровогоТаймера будет закрываться вместе с главным потоком
+        gameTimer.setDaemon(true); // TIMER: поток игровогоТаймера будет закрываться вместе с главным потоком
         field = new Field(size, bombs);
         Pane root = (Pane) drawField(field, width, height);
-        TimerTask task = new TimerTask() { // GAME_TIMER: создание задачи обновления дисплея игровогоТаймера
-            @Override
-            public void run() {
-                timerDisplay.setText(gameTimer.getTimeString()); // GAME_TIMER: обновление текста дисплея
-            }
-        };
-
-        // GAME_TIMER: запуск таймера обновления дисплея
-        // ждёт 1 сек (delay=1000) восле запуска - "нулевая секунда"
-        // далее каждую сек. (period=1000) выполняет задачу task
-        timer.schedule(task,1000,1000);
-
-        gameTimer.start(); // GAME_TIMER: запуск игрового таймера
-        root = root;
-        root.setPrefSize(width, height + 30); // GAME_TIMER: + 30px для таймера
+        gameTimer.start(); // TIMER: запуск таймер
+        root.setPrefSize(width, height + 30); // TIMER: + 30px для таймера
         return root;
     }
 
