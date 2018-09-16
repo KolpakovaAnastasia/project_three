@@ -84,11 +84,9 @@ class Field {
             cells[cell.getX()][cell.getY()] = cell;
             List<Cell> list = getNeighbors(cell);
             for (Cell aList : list) {
-                if (aList.getBombsNear() == 0) {
-                    select(aList);
-                }
-                else if (!aList.isBomb()) {
-                    cells[aList.getX()][aList.getY()].setState(CellState.opened);
+                if(!aList.isBomb()) {
+                    if (aList.getBombsNear() == 0) select(aList);
+                    else cells[aList.getX()][aList.getY()].setState(CellState.opened);
                 }
             }
         }

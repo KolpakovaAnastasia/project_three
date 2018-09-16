@@ -2,7 +2,6 @@
 class Cell {
     private int x;
     private int y;
-
     private int bombsNear;
     private boolean isBomb;
 
